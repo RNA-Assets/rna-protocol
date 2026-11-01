@@ -812,7 +812,7 @@ docs/
 
 ### Gate D — Performance / Security Comparison
 
-Compare the same supported lifecycle using **Single-Cell RNA, Dual-Cell RNA and enforced Spore-dependent State profiles**, distinguishing a managed Lock from an issuance-configured RNA-aware Mutant:
+Compare the same supported lifecycle using **RNA Native and Spore + RNA-aware Mutant + dependent State**:
 
 - Minting, game upgrades, transfers, Burn and custody entry.
 - Transaction size, Witness bytes, Cell Capacity, VM cycles, source line count and independently auditable trust boundaries.
