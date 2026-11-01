@@ -75,6 +75,12 @@ The four transition classes describe logical item effects. The normative paired 
 
 A custom single-Cell Lock can authorise both owner spends and scoped game updates. Its Type still enforces who may change each field and how custody/termination work. Both writers consume the same input; the independent-Asset pause argument cannot simply be transplanted into that one-Cell shape.
 
+Spore plus an enforced dependent State also has a separate asset-side input. That structural property is shared with native dual-Cell RNA. Both require a deliberately authorised control-only spend and State validity rules that stop ordinary writes after the control action. The Native reference proposal expresses this through mutable Asset control fields; an equivalent Spore profile needs its own binding/control encoding. An immutable Spore payload does not by itself rule out such a profile. The existing abstract model exercises the native proposal, not a completed Spore implementation.
+
+A Spore managed Lock must preserve State binding across permitted successor Locks/custody contracts. A Type-level Mutant can keep that restriction attached across Lock changes and can retain ordinary wallet Locks, with its reference configured in the Spore's immutable content type. Native RNA chooses its own data layout, Type boundaries and lifecycle rather than inheriting that format and extension interface. A matched comparison must implement the same required controls and recovery conditions on both sides.
+
+The independent control path is particularly relevant when a writer can keep advancing the L1 State input and the deployment promises departure without that writer's cooperation. Cooperative, infrequent or application-ledger flows may use different handoff/closing procedures. Shared input separation alone does not establish a valid pause branch, data availability or a time bound on chain inclusion.
+
 Shared roots can reduce per-item storage, but root updates can stale a proof/dependency needed by another transaction. The profile must define authoritative snapshots and bounded recovery, as well as leaf availability and claim uniqueness. Faster off-chain execution can batch updates for any compatible storage profile; it does not itself choose a safe L1 exit protocol.
 
 ## Acceptance cases to add to implementations

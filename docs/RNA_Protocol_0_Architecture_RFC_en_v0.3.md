@@ -31,6 +31,8 @@ This RFC adopts a **dual-Cell RNA Native model**, independent of Spore:
 
 This is the reference storage profile for independent game updates while retaining an ordinary holder Lock. A collectible may need only its immutable asset, and a holder-approved mutable item may use a single Cell. Custom-Lock single-Cell and shared-state designs require separate profile contracts and conformance rules; the paired genesis and wire model below continue to define the dual-Cell reference profile.
 
+Spore plus an enforced companion State can also separate the holder's asset input from game updates. This input separation is shared with native dual-Cell RNA. Owner-control capability depends on each profile's authorised branches and validity rules. The Native choice defines its own data and lifecycle contracts.
+
 **Non-goals:** RNA does not depend on, or promise compatibility with, Spore/DOB/Mutant; does not rebuild CKB wallet or private-key custody infrastructure; does not require every in-game item or gameplay tick to go on-chain; and is not a general fungible-token protocol, game engine, routing network or deployed L2. **A Game Session is merely an optional execution optimisation: it does not make an RNA asset or its authoritative L1 State ephemeral.**
 
 ## 1. Requirements Derived from UTXOPlay
