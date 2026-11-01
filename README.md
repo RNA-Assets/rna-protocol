@@ -25,6 +25,8 @@ This repository contains design documentation and an executable abstract owner-c
 
 [Draft 0.2](docs/RNA_Protocol_0_Architecture_RFC_en_v0.2.md) remains available unchanged for historical references. Draft 0.3 changes the proposed layout and I-05; it does not allocate a released wire version.
 
+[Verification, settlement and storage profiles](docs/verification-and-storage-profiles.md) explains pinned policy code, schema/transition/execution checks, replay evidence and the actual L1 acceptance path. It also compares holder-approved single-Cell items, specialised Locks, the dual-Cell reference profile and shared application State.
+
 ## Abstract owner-control checks
 
 ```sh

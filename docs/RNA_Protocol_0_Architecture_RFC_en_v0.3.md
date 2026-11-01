@@ -29,6 +29,8 @@ This RFC adopts a **dual-Cell RNA Native model**, independent of Spore:
 
 **Principal choice:** The initial RNA/0 profile maintains one independent, persistent State lineage per asset rather than a shared Merkle root. A future RNA/Merkle Profile is possible, but must provide a single authority, data availability and proofs of safe exit.
 
+This is the reference storage profile for independent game updates while retaining an ordinary holder Lock. A collectible may need only its immutable asset, and a holder-approved mutable item may use a single Cell. Custom-Lock single-Cell and shared-state designs require separate profile contracts and conformance rules; the paired genesis and wire model below continue to define the dual-Cell reference profile.
+
 **Non-goals:** RNA does not depend on, or promise compatibility with, Spore/DOB/Mutant; does not rebuild CKB wallet or private-key custody infrastructure; does not require every in-game item or gameplay tick to go on-chain; and is not a general fungible-token protocol, game engine, routing network or deployed L2. **A Game Session is merely an optional execution optimisation: it does not make an RNA asset or its authoritative L1 State ephemeral.**
 
 ## 1. Requirements Derived from UTXOPlay
@@ -65,13 +67,15 @@ The product objective is not another wallet. It is to let holders of existing wa
 
 ### 2.1 Three Verification Profiles
 
-| Profile | What is verified | What is **not** guaranteed |
+| Profile | L1 acceptance condition | Trust and evidence dependencies |
 |---|---|---|
-| `ATTESTED` | A designated operator or committee correctly signed the outcome | That the game outcome itself is independently correct |
-| `SCRIPT_VERIFIED` | An L1 Policy Script carried out the prescribed verification of evidence | That game inputs are authentic or available, unless independently established |
-| `PROOF_VERIFIED` | The declared proof/dispute system and L1 verifier satisfied their prescribed conditions | Freedom from data-availability, setup or exit-availability risks |
+| `ATTESTED` | A designated authority or quorum endorsed the exact result | The authority's account of the game result, subject to core-enforced limits |
+| `SCRIPT_VERIFIED` | L1 directly checked the declared recipe, transition or bounded replay relation | Pinned rules, input authentication and required evidence availability |
+| `PROOF_VERIFIED` | L1 verified the declared transition proof or an executable dispute result | The proved statement, input commitments, proof/challenge assumptions and required data |
 
 All clients MUST display the specific Profile. A merely signed game result MUST NOT be presented as ‘fully trustless’.
+
+Replay is an evidence/verification method, not a fourth acceptance level. If an operator or committee replays a game and L1 accepts only its signatures, the deployment uses `ATTESTED` with that authority model. Stronger acceptance requires the actual L1 transition verifier, validity proof or completed executable dispute procedure. Running signature-verification code in CKB-VM does not change what the result authority is trusted to attest. See the [verification and storage profile notes](verification-and-storage-profiles.md).
 
 ### 2.2 Item Primitives and Action Layers
 
@@ -397,6 +401,16 @@ Normative requirement: `ASSET_LINKED` MUST bind the exact current Asset's full T
 
 CKB independently verifies the Lock for the Asset Input. The State Lock need not reimplement JoyID cryptography, but MUST verify the transaction structure and paired Asset; the Asset Type and State Type must enforce the reciprocal security constraints. The exact Witness format and index-matching rules remain to be frozen at M0.
 
+### 6.5 Game Policy Verification Contract
+
+The verifier's code may be pinned while still evaluating a complete state machine. Schema parsing and range checks alone supply no relation between a prior accepted State and an earned result. The selected policy must state the relation it actually enforces, including any attested game-event source.
+
+The existing `policy_hash` may commit to a canonical descriptor covering verifier code/version/configuration, State/action schemas, accepted input authentication and ordering, time/randomness, execution program/context, evidence encoding, L1 acceptance/settlement rules, administrator privileges and migration authority. This descriptor remains a proposal whose ABI, canonical encoding and bounds must be frozen by the supported profile. It introduces no additional fixed-width State fields in this clarification.
+
+The State Type MUST authenticate the descriptor and force the selected acceptance procedure to execute alongside all kernel checks. Providing a code Cell or metadata hash is insufficient. VM invocation or an execution hand-off MUST preserve every required identity, custody, capacity, control and protected-rights check. Game-specific verifiers cannot replace those checks or accept an arbitrary policy migration.
+
+An unmodified or dishonest game client may display a fabricated reward. A canonical RNA update is accepted only when the actual L1 branch's conditions are met. Under `ATTESTED`, a declared authority may endorse that reward; direct verification/proof profiles must enforce their declared transition relation. The [companion note](verification-and-storage-profiles.md) separates input integrity, rule execution, session finality and settlement selection.
+
 ## 7. RNA/0 Core Lifecycle and Transaction Flows
 
 ### 7.1 `CREATE` / `MINT` — Atomic Dual-Cell Genesis
@@ -684,6 +698,8 @@ rna.exit_proof_reference
 
 `Myelin-finalised` MUST NOT be treated as synonymous with `CKB-enforceable`. A deployment permitting an RNA Asset to exit Myelin must implement asset custody, valid state selection, proofs, data availability and an exit package available to the user.
 
+The application authenticates command identities and payloads and binds them to permitted economic actions. Session execution and replay produce evidence under that declared program; the chosen finality module and RNA's L1 acceptance predicate have separate responsibilities. An RNA adapter must identify the exact proof, verdict or authority/quorum accepted on L1 and the prior custody/State context it consumes. Current session-safety integration contracts and local recovery admission do not authorise arbitrary CKB withdrawals. See [Myelin session safety](https://github.com/Myelin-Labs/Myelin/blob/main/docs/architecture/session-safety.md).
+
 ## 11. Fiber Adapter (Payment Interoperability, Not a Claim of NFT Routing)
 
 RNA's initial, well-defined integration with Fiber is **payment**, not ‘native multi-hop NFT transfer through Fiber’:
@@ -779,6 +795,9 @@ docs/
 - **B13 (binding profile):** Admission is paired and authorised; `OPEN` State-only writes cannot create irrevocable claims; pause/revocation cannot erase admitted obligations.
 - **B14 (binding profile):** Permit one final result per closing context; reject receipt reset and any other closing State-only write. Final-first permits at most one rebuild; exit-first invalidates late dependencies.
 - **B15 (binding profile):** Enforce canonical Asset-input relative `since`; reject premature fallback, invalid terms and excess admitted loss. State changes cannot reset the clock.
+- **B16:** Reject a schema-valid result that violates the selected direct-verification recipe or transition relation. A signed result in an attested profile must retain its declared authority assumptions.
+- **B17:** Reject substituted program/configuration, invalid actor authorisation, replayed inputs and unsupported evidence/acceptance branches. A local replay receipt cannot enter a stronger L1 path without the required proof or verdict.
+- **B18:** Verify the complete policy descriptor and preserve kernel checks across verifier invocation and migration. Disallowed administrator actions must fail; powers explicitly permitted by the policy must be disclosed.
 
 ### Gate C — Ownership / Lifecycle
 
@@ -916,6 +935,7 @@ This demonstration does not require a new wallet, Spore, changes to CCC Core, Mo
 - Added atomic operation manifests, complete cross-Type-group recipe verification, parent/breeding budget requirements and distinct item/session finalisation semantics.
 - Extended the schema sketch and planned acceptance cases. All existing occupancy figures refer to the earlier layout and need remeasurement.
 - Preserved [Draft 0.2](RNA_Protocol_0_Architecture_RFC_en_v0.2.md). No RNA deployment, compiled schema or action-number assignment is introduced by this document revision.
+- Clarified transition verification beyond schema checks, replay versus the actual L1 acceptance predicate, input/rule assumptions, and the separate settlement boundary. Added [profile design notes](verification-and-storage-profiles.md) and marked single-Cell/shared-state alternatives as requiring their own conformance rules. This clarification adds no wire fields.
 
 ---
 
